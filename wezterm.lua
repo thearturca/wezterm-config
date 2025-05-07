@@ -11,7 +11,7 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
 end
 
 config.font = wezterm.font("Hack Nerd Font Mono")
-local theme = require("lua/rose-pine").main
+local theme = require("lua/rose-pine").moon
 config.colors = theme.colors()
 config.window_frame = theme.window_frame()
 config.window_background_opacity = 0.85
@@ -108,7 +108,6 @@ config.keys = {
 		mods = "LEADER",
 		action = wezterm.action.ActivatePaneDirection("Right"),
 	},
-
 	{
 		key = "UpArrow",
 		mods = "LEADER",
