@@ -16,7 +16,7 @@ config.colors = theme.colors()
 config.window_frame = theme.window_frame()
 config.window_background_opacity = 0.85
 config.macos_window_background_blur = 20
-config.win32_system_backdrop = "Mica"
+config.win32_system_backdrop = "Acrylic"
 config.max_fps = 240
 
 config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 750 }
@@ -44,7 +44,7 @@ local schema = {
 	},
 }
 
-local workspaces = require("lua/search-workspace.local")
+local workspaces = require("lua/search-workspace_local")
 
 local fd_path = "/usr/bin/fd"
 
