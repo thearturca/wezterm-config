@@ -6,12 +6,19 @@ local config = wezterm.config_builder()
 
 -- This is where you actually apply your config choices
 
-config.default_prog = { "pwsh.exe" }
-config.font = wezterm.font("Hack Nerd Font Mono")
+if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+	config.default_prog = { "pwsh.exe" }
+end
 
+config.font = wezterm.font("Hack Nerd Font Mono")
 local theme = require("lua/rose-pine").main
 config.colors = theme.colors()
 config.window_frame = theme.window_frame()
+config.window_background_opacity = 0.85
+config.macos_window_background_blur = 20
+config.win32_system_backdrop = "Mica"
+config.max_fps = 240
+
 config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 750 }
 
 config.tab_bar_at_bottom = true
@@ -25,8 +32,6 @@ local schema = {
 	sessionizer.DefaultWorkspace({}),
 	sessionizer.AllActiveWorkspaces({}),
 
-	sessionizer.FdSearch({ "f:/projects", fd_path = "fd" }),
-
 	processing = {
 		sessionizer.for_each_entry(
 			function(entry) -- recolors labels and replaces the absolute path to the home directory with ~
@@ -38,6 +43,18 @@ local schema = {
 		),
 	},
 }
+
+local workspaces = require("lua/search-workspace.local")
+
+local fd_path = "/usr/bin/fd"
+
+if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+	fd_path = "fd"
+end
+
+for _, workspace in ipairs(workspaces) do
+	table.insert(schema, sessionizer.FdSearch({ workspace, fd_path = fd_path }))
+end
 
 config.keys = {
 	{
