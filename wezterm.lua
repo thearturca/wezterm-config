@@ -26,21 +26,66 @@ config.tab_bar_at_bottom = true
 local sessionizer = wezterm.plugin.require("https://github.com/mikkasendke/sessionizer.wezterm")
 local history = wezterm.plugin.require("https://github.com/mikkasendke/sessionizer-history")
 
+local function isEntryActive(entryId)
+	local all_workspaces = wezterm.mux.get_workspace_names()
+	for _, v in ipairs(all_workspaces) do
+		if entryId == v then
+			return true
+		end
+	end
+	return false
+end
+
 local schema = {
-	options = { callback = history.Wrapper(sessionizer.DefaultCallback) },
+	options = { callback = history.Wrapper(sessionizer.DefaultCallback), prompt = "Workspaces: " },
 	history.MostRecentWorkspace({}),
-	sessionizer.DefaultWorkspace({}),
+	sessionizer.DefaultWorkspace({ label_overwrite = "🏠 Home" }),
 	sessionizer.AllActiveWorkspaces({}),
 
 	processing = {
-		sessionizer.for_each_entry(
-			function(entry) -- recolors labels and replaces the absolute path to the home directory with ~
+		sessionizer.for_each_entry(function(entry)
+			local is_active = isEntryActive(entry.id)
+			if entry.label:find("^Recent ") ~= nil then
+				entry.label = entry.label:gsub("Recent", "🔙")
+			elseif entry.label == "🏠 Home" then
+				entry.label = "🏠 Home"
+			elseif is_active then
+				entry.label = "📂 " .. entry.label
+			else
+				entry.label = "📁 " .. entry.label
+			end
+		end),
+		sessionizer.for_each_entry(function(entry)
+			entry.label = entry.label:gsub(wezterm.home_dir, "~")
+		end),
+		sessionizer.for_each_entry(function(entry)
+			if entry.label == "🏠 Home" or entry.label:find("^🔙") then
 				entry.label = wezterm.format({
-					{ Foreground = { Color = "#c4a7e7" } },
-					{ Text = entry.label:gsub(wezterm.home_dir, "~") },
+					{
+						Foreground = {
+							Color = "#e0def4",
+						},
+					},
+					{ Text = entry.label },
+				})
+			elseif entry.label:find("^📂 ") then
+				entry.label = wezterm.format({
+					{
+						Foreground = {
+							Color = "#c4a7e7",
+						},
+					},
+					{ Text = entry.label },
+				})
+			else
+				entry.label = wezterm.format({
+					{ Foreground = {
+						Color = "#908caa",
+					} },
+					{ Text = entry.label },
 				})
 			end
-		),
+		end),
 	},
 }
 
