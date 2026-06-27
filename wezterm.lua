@@ -18,6 +18,8 @@ config.window_background_opacity = 0.85
 config.macos_window_background_blur = 20
 config.win32_system_backdrop = "Acrylic"
 config.max_fps = 240
+-- config.front_end = "WebGpu"
+-- config.enable_wayland = false
 
 config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 750 }
 
